@@ -71,7 +71,8 @@ sys_sleep(void)
 
 
 #ifdef LAB_PGTBL
-int
+
+  int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
@@ -104,6 +105,8 @@ sys_pgaccess(void)
 
   return 0;
 }
+
+
 #endif
 
 uint64

@@ -132,8 +132,8 @@ found:
     return 0;
   }
 
-  p->dia_chi_vung_nho_chia_se = (struct usyscall *)kalloc();
-    if (p->dia_chi_vung_nho_chia_se == 0) {
+  p->usyscall = (struct usyscall *)kalloc();
+    if (p->usyscall == 0) {
         freeproc(p);  // Xử lý lỗi nếu không cấp phát được
         release(&p->lock);
         return 0;
@@ -153,7 +153,7 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
-  p->dia_chi_vung_nho_chia_se->pid = p->pid;//Luu pid
+  p->usyscall->pid = p->pid;//Luu pid
   return p;
 }
 
@@ -179,10 +179,10 @@ freeproc(struct proc *p)
   p->state = UNUSED;
 
   //Giải phóng vùng nhớ chia sẻ
-    if (p->dia_chi_vung_nho_chia_se) {
-        kfree((void *)p->dia_chi_vung_nho_chia_se);
+    if (p->usyscall) {
+        kfree((void *)p->usyscall);
     }
-    p->dia_chi_vung_nho_chia_se = 0;
+    p->usyscall = 0;
 }
 
 // Create a user page table for a given process, with no user memory,
@@ -217,7 +217,7 @@ proc_pagetable(struct proc *p)
   }
 
   if (mappages(pagetable, USYSCALL, PGSIZE,
-                 (uint64)p->dia_chi_vung_nho_chia_se, PTE_R | PTE_U) < 0) {
+                 (uint64)p->usyscall, PTE_R | PTE_U) < 0) {
     uvmunmap(pagetable, TRAPFRAME, 1, 0);  // Hủy ánh xạ TRAPFRAME
     uvmunmap(pagetable, TRAMPOLINE, 1, 0); // Hủy ánh xạ TRAMPOLINE
     uvmfree(pagetable, 0);
